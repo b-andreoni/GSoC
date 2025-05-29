@@ -49,12 +49,16 @@ local function update()
         vel:z(SIM_APOS_VEL_Z:get())
         quat:earth_to_body(vel)
 
-        local loc = ahrs:get_origin()
+        local loc = Location()
         if not loc then
             return
         end
-        loc:offset(SIM_APOS_POS_N:get(), SIM_APOS_POS_E:get())
-        loc:alt(loc:alt() - SIM_APOS_POS_D:get()*100)
+        
+        -----------------------------------------------------------------------------------
+        loc:lat(math.floor(-23.55604194 * 1e7 + 0.5))
+        loc:lng(math.floor(-46.73024763 * 1e7 + 0.5))
+        loc:alt(math.floor(740        * 100   + 0.5))
+        -----------------------------------------------------------------------------------
 
         local gyro = Vector3f()
         gyro:x(math.rad(SIM_APOS_GX:get()))
@@ -66,9 +70,8 @@ local function update()
         if SIM_APOS_MODE:get() >= 0 then
             vehicle:set_mode(SIM_APOS_MODE:get())
         end
+        was_armed = true
     end
-
-    was_armed = armed
 end
 
 local function loop()
