@@ -8,13 +8,13 @@
 
 **Mentors:** Nate Mailhot & Sanket Sharma&nbsp;&nbsp;|&nbsp;&nbsp;**Timeframe:** May → Sep 2025&nbsp;&nbsp;|&nbsp;&nbsp;**Project:** [GSoC](https://summerofcode.withgoogle.com/programs/2025/projects/w7EYZSIz)
 
-## Introduction
+## 1. Introduction
 
 Hello Ardupilot community! I'm Bruno Andreoni Sarmento, a 4th year student at the Polytechnic School of the University of São Paulo (USP), pursuing a bachelor’s degree in Electrical Engineering. For the past two years I’ve been a member of Skyrats (USP’s autonomous-drone team), where I’ve worked with many open-source tools, ArduPilot being our core flight-control framework.
 
 I've been inspired by other team members that took part in GSoC project, and it was a dream come true being selected to this awesome project!
 
-## Problem Statement
+## 2. Problem Statement
 
 Today, UAV parameter tuning still relies on manual adjustments, often requiring trial-and-error sweeps and test flights. This approach is:
 
@@ -24,7 +24,7 @@ Today, UAV parameter tuning still relies on manual adjustments, often requiring 
 
 Meanwhile, **Reinforcement Learning (RL)** offers a principled method for adaptive control, but the **ArduPilot SITL environment lacks built-in support for episodic interactions**, which are essential for reliable training and evaluation.
 
-## Project Proposal
+## 3. Project Proposal
 > This project builds a lightweight Lua-based scripting layer on top of the existing SITL engine to enable episodic RL interactions.
 
 ![RL Illustrated](images/rl.jpg)
@@ -38,12 +38,12 @@ The project introduces:
 
 This project builds the necessary infrastructure for **online learning directly in SITL**, unlocking new workflows for intelligent parameter tuning and experimental reinforcement learning within the ArduPilot ecosystem.
 
-## Solution Diagram
+## 4. Solution Diagram
 ![Solution diagram](images/diagram.jpeg)
 
 This diagram shows how **online reinforcement learning** is embedded into **ArduPilot SITL** using **Lua scripting**.
 
-### Block‑by‑Block Breakdown 🔍
+### 4.1 Block‑by‑Block Breakdown 🔍
 
 | Block                 | Role                                                                                  | Key ArduPilot / Lua APIs                                       |
 | --------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
@@ -56,7 +56,7 @@ This diagram shows how **online reinforcement learning** is embedded into **Ardu
 | **Sensor Simulation** | Generates IMU/GPS from physics backend (Gazebo or built‑in).                          | SITL C++                                                       |
 |**Legend** |**Solid arrows** represent *events or commands*. **Dashed arrows** represent *data flow* (e.g., telemetry, reward, state). | |
 
-## How the Loop Runs
+## 5. How the Loop Runs
 1. **Reset** → Script arms vehicle, immediately calls `sim:set_pose()` to starting state.
 2. **Episode** → RL chooses an action (e.g., ±5 % on `ATC_RAT_RLL_P`).
 3. **Flight** → Controller responds; Metrics Collector accumulates reward.
@@ -64,7 +64,7 @@ This diagram shows how **online reinforcement learning** is embedded into **Ardu
 5. **Learn** → RL updates its policy online before next episode begins.
 
 Every tick is scheduled via `return loop, 100` (100 ms).
-### Code sketch
+### 5.1 Code sketch
 A simplified sketch of how the episodic learning loop works in Lua:
 
 ```lua
@@ -96,7 +96,7 @@ return loop, 100
 ---
 
 
-## Timeline
+## 6. Timeline
 This GSoC project is structured into four main phases:
 
 | Phase                    | Timeframe    | Key Deliverables                                           |
@@ -106,7 +106,7 @@ This GSoC project is structured into four main phases:
 | **3. Policy Refinement** | August 2025  | - Add exploration strategies (e.g. ε-decay)<br>- Validate on varied flight scenarios |
 | **4. Docs & Releases**   | Early Sept   | - Publish user guide and examples<br>- Open PRs/issues for community review |
 
-## Call for feedback
+## 7. Call for feedback
 I'm looking for feedback from the ArduPilot community on:
 
 - Reset strategies using sim:set_pose()
