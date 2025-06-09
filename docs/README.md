@@ -43,50 +43,60 @@ This project builds the necessary infrastructure for **online learning directly 
 
 This diagram shows how **online reinforcement learning** is embedded into **ArduPilot SITL** using **Lua scripting**.
 
-Key components:
-- `Episode Manager` controls episodes and triggers resets via `sim:set_pose()`.
-- `Metrics Collector` gathers rewards.
-- `Online RL` updates the policy live (Q-learning, SARSA, actor-critic).
-- `Policy Executor` sends actions or updates parameters.
+### Block‑by‑Block Breakdown 🔍
 
+| Block                 | Role                                                                                  | Key ArduPilot / Lua APIs                                       |
+| --------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Episode Manager**   | Detects episode termination (e.g. time‑out, crash, success) and fires a reset.        | `time:millis()`, custom state checks                           |
+| **Teleport / Reset**  | Instantaneously re‑positions vehicle & zeros attitude/vel using **`sim:set_pose()`**. | `sim:set_pose(instance, loc, orient, vel_bf, gyro)`            |
+| **Metrics Collector** | Computes reward signals (tracking error, overshoot, energy) every tick.               | `ahrs:get_pitch()`, `vehicle:get_target_alt()`, custom math    |
+| **Online RL**         | Updates Q‑table / value function in‑place at \~10 Hz; selects next action.            | Pure Lua tables for Q‑table; math lib                          |
+| **Policy Executor**   | Applies action by tweaking params or sending direct control:                          | `param:set("ATC_RAT_PIT_P", val)`, `vehicle:set_target_roll()` |
+| **EKF3**              | Supplies fused state to Lua via binding helpers (`ahrs`, `ins`, etc.).                | Firmware internal                                              |
+| **Sensor Simulation** | Generates IMU/GPS from physics backend (Gazebo or built‑in).                          | SITL C++                                                       |
 **Legend**:
 - **Solid arrows** represent *events or commands*.
 - **Dashed arrows** represent *data flow* (e.g., telemetry, reward, state).
 
-## Code sketch
-Here's a simplified sketch of how the episodic learning loop works in Lua:
+## How the Loop Runs
+1. **Reset** → Script arms vehicle, immediately calls `sim:set_pose()` to starting state.
+2. **Episode** → RL chooses an action (e.g., ±5 % on `ATC_RAT_RLL_P`).
+3. **Flight** → Controller responds; Metrics Collector accumulates reward.
+4. **Terminate** → After `N` steps or goal reached, Episode Manager logs result and triggers new reset.
+5. **Learn** → RL updates its policy online before next episode begins.
+
+Every tick is scheduled via `return loop, 100` (100 ms).
+### Code sketch
+A simplified sketch of how the episodic learning loop works in Lua:
 
 ```lua
--- Initialize
-episode = EpisodeManager:new{max_steps = 200, initial_state = {...}}
-policy  = QLearningPolicy:new{alpha=0.1, gamma=0.9, epsilon=0.2}
-metrics = MetricsCollector:new()
+-- init
+local episode   = EpisodeManager.new{max_steps=200}
+local policy    = QLearning.new{alpha=0.1, gamma=0.9, eps=0.2}
+local collector = Metrics.new()
 
--- Core tick function
-function tick()
+function loop()
   if episode:done() then
-    sim:set_pose(
-      instance,
-      episode.initial_state.pos,
-      episode.initial_state.orient,
-      episode.initial_state.vel,
-      episode.initial_state.gyro_rads
-    )
-    policy:learn(metrics:get_all())
-    episode:start_new()
-    metrics:clear()
+    sim:set_pose(0, episode.start_loc, episode.start_ori)
+    policy:learn(collector:get())
+    episode:reset()
+    collector:clear()
   else
-    local state  = state_estimator:get_state()
-    local action = policy:select(state)
-    param:set_value(action.param, action.value)
-    metrics:record(state, action)
+    local s = episode:get_state()
+    local a = policy:select(s)
+    PolicyExecutor.apply(a)
+    collector:record(s, a)
   end
-  return tick, 500
+  return loop, 100 -- ms
 end
 
-return tick, 500
-
+return loop, 100
 ```
+
+*(Full implementation lives in https://github.com/b-andreoni/GSoC/blob/main/scripts)*
+
+---
+
 
 ## Timeline
 This GSoC project is structured into four main phases:
