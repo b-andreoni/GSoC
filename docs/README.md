@@ -1,6 +1,7 @@
 # GSoC 2025: SITL AI Reinforcement Learning Concept Script
 
-![|690x205](upload://xxHpjSo6MjBR78pnpE624gt8K52.png)
+![GSoC banner](images/GSoC-Banner.png)
+
 
 
 > **A Lua script that lets ArduPilot learn to tune itself, live, within SITL.**
@@ -26,7 +27,7 @@ Meanwhile, **Reinforcement Learning (RL)** offers a principled method for adapti
 ## Project Proposal
 > This project builds a lightweight Lua-based scripting layer on top of the existing SITL engine to enable episodic RL interactions.
 
-![Reinforcement Learning Illustrated](upload://fxhFDlPAXijWp4RNjHTR8CqNpWq.jpeg)
+![RL Illustrated](images/rl.jpg)
 
 The project introduces:
 
@@ -38,7 +39,7 @@ The project introduces:
 This project builds the necessary infrastructure for **online learning directly in SITL**, unlocking new workflows for intelligent parameter tuning and experimental reinforcement learning within the ArduPilot ecosystem.
 
 ## Solution Diagram
-![Solution Diagram](upload://nybo4sE23UPrmlUY2lCamjmewGH.jpeg)
+![Solution diagram](images/diagram.jpeg)
 
 This diagram shows how **online reinforcement learning** is embedded into **ArduPilot SITL** using **Lua scripting**.
 
