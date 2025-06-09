@@ -54,9 +54,7 @@ This diagram shows how **online reinforcement learning** is embedded into **Ardu
 | **Policy Executor**   | Applies action by tweaking params or sending direct control:                          | `param:set("ATC_RAT_PIT_P", val)`, `vehicle:set_target_roll()` |
 | **EKF3**              | Supplies fused state to Lua via binding helpers (`ahrs`, `ins`, etc.).                | Firmware internal                                              |
 | **Sensor Simulation** | Generates IMU/GPS from physics backend (Gazebo or built‑in).                          | SITL C++                                                       |
-**Legend**:
-- **Solid arrows** represent *events or commands*.
-- **Dashed arrows** represent *data flow* (e.g., telemetry, reward, state).
+|**Legend** |**Solid arrows** represent *events or commands*. **Dashed arrows** represent *data flow* (e.g., telemetry, reward, state). | |
 
 ## How the Loop Runs
 1. **Reset** → Script arms vehicle, immediately calls `sim:set_pose()` to starting state.
