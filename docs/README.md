@@ -10,7 +10,7 @@
 
 ## 1. Introduction
 
-Hello Ardupilot community! I'm Bruno Andreoni Sarmento, a 4th year student at the Polytechnic School of the University of São Paulo (USP), pursuing a bachelor’s degree in Electrical Engineering. For the past two years I’ve been a member of Skyrats (USP’s autonomous-drone team), where I’ve worked with many open-source tools, ArduPilot being our core flight-control framework.
+Hello ArduPilot community! I'm Bruno Andreoni Sarmento, a 4th year student at the Polytechnic School of the University of São Paulo (USP), pursuing a bachelor’s degree in Electrical Engineering. For the past two years I’ve been a member of Skyrats (USP’s autonomous-drone team), where I’ve worked with many open-source tools, ArduPilot being our core flight-control framework.
 
 I've been inspired by other team members that took part in GSoC project, and it was a dream come true being selected to this awesome project!
 
