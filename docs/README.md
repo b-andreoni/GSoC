@@ -39,7 +39,7 @@ The project introduces:
 This project builds the necessary infrastructure for **online learning directly in SITL**, unlocking new workflows for intelligent parameter tuning and experimental reinforcement learning within the ArduPilot ecosystem.
 
 ## 4. Solution Diagram
-![Solution diagram](images/diagram.jpeg)
+![Solution diagram](images/diagram.png)
 
 This diagram shows how **online reinforcement learning** is embedded into **ArduPilot SITL** using **Lua scripting**.
 
@@ -54,7 +54,6 @@ This diagram shows how **online reinforcement learning** is embedded into **Ardu
 | **Policy Executor**   | Applies action by tweaking params or sending direct control:                          | `param:set("ATC_RAT_PIT_P", val)`, `vehicle:set_target_roll()` |
 | **EKF3**              | Supplies fused state to Lua via binding helpers (`ahrs`, `ins`, etc.).                | Firmware internal                                              |
 | **Sensor Simulation** | Generates IMU/GPS from physics backend (Gazebo or built‑in).                          | SITL C++                                                       |
-|**Legend** |**Solid arrows** represent *events or commands*. **Dashed arrows** represent *data flow* (e.g., telemetry, reward, state). | |
 
 ## 5. How the Loop Runs
 1. **Reset** → Script arms vehicle, immediately calls `sim:set_pose()` to starting state.
