@@ -1,5 +1,3 @@
-# GSoC 2025: SITL AI Reinforcement Learning Concept Script
-
 ![|690x205](upload://xxHpjSo6MjBR78pnpE624gt8K52.png)
 
 > **A Lua script that lets ArduPilot learn to tune itself, live, within SITL.**
@@ -40,9 +38,10 @@ This project builds the necessary infrastructure for **online learning directly 
 
 ## 4. Solution Diagram 🖼️
 
-![Solution Diagram|576x500](upload://kGoStJvVlYuzYH29CLV0wP84rbJ.jpeg)
+![Solution Logical Flow|589x500](upload://3GFTcsJfUjv1sWqDlGQEddySDkj.jpeg)
 
-### 4.1 Block‑by‑Block Breakdown 🔍
+
+### 4.1 Block‑by‑Block Breakdown
 
 | Block                              | Role                                                                                                                                                                                                                                                    | Key ArduPilot / Lua APIs                                       |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
@@ -62,9 +61,7 @@ This project builds the necessary infrastructure for **online learning directly 
 4. **Terminate** → After `N` steps or goal reached, Episode Manager logs result and triggers new reset.
 5. **Learn** → RL updates its policy online before next episode begins.
 
-Every tick is scheduled via `return loop, 100` (100 ms).
-
-### 5.1 Code sketch 💻
+### 5.1 Code sketch
 
 ```lua
 -- init
@@ -118,9 +115,9 @@ Drop a comment on the PR, open an issue, or ping me on Discord (@bruno\_as). You
 Thanks in advance!
 
 ## 8. Github 🔗
+### Main repository:
 https://github.com/b-andreoni/GSoC/
 
-### Related PRs & Code Snippets:
+### Related PRs:
 https://github.com/ArduPilot/ardupilot/pull/29616
-https://github.com/ArduPilot/ardupilot/blob/master/libraries/AP_Scripting/examples/sim_arming_pos.lua
 https://github.com/ArduPilot/ardupilot/pull/29498/commits/51364c7f43af09c5f42d3e95315dc9c642dc093c
