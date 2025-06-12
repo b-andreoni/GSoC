@@ -1,4 +1,4 @@
-# GSoC 2025: SITL AI Reinforcement Learning Concept Script
+# Google Summer of Code 2025: SITL AI Reinforcement Learning Concept Script
 
 ![GSoC banner](docs/images/GSoC-Banner.png)
 
