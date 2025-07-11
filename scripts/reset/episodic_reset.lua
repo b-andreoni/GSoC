@@ -37,6 +37,7 @@ local P_MODE     = bind_add_param("MODE",   14, -1)   -- flight-mode override
 local P_POS_LAT  = bind_add_param("POS_N",  15,  -35.3627351)   -- absolute target latitude
 local P_POS_LNG  = bind_add_param("POS_E",  16,  149.1651426)   -- absolute target longitude
 local P_POS_ALT  = bind_add_param("POS_D",  17,  10)   -- absolute target altitude (+m)
+local P_STATE = bind_add_param("STATE", 18, -1)   -- current state
 
 -- disable arming checks (SITL only)
 param:set("ARMING_CHECK", 0)
