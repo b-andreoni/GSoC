@@ -123,7 +123,7 @@ function update()
         end
 
     elseif state==2 then
-    -- increment yaw param by X°
+    -- increment yaw param by 45°
         local new_yaw = (P_YAW:get() or 0) + 45
         P_YAW:set(new_yaw)
         -- build combined attitude
