@@ -29,7 +29,7 @@ param:set("GPS_TYPE",        0)
 param:set("GPS_AUTO_CONFIG", 0)
 param:set("GPS_AUTO_SWITCH", 0)
 param:set("AHRS_EKF_TYPE",  10)
-param:set("SIM_SPEEDUP",  5)
+param:set("SIM_SPEEDUP",  5000)
 
 ------------------------------------------------------------------
 -- CONSTANTS
@@ -163,6 +163,29 @@ local function wait_s(sec)
     return false, (dl - now) / 1000.0 
 end
 
+local function geo_dist_m(locA, locB)
+    local lat1 = math.rad(locA:lat() / 1e7)
+    local lon1 = math.rad(locA:lng() / 1e7)
+    local lat2 = math.rad(locB:lat() / 1e7)
+    local lon2 = math.rad(locB:lng() / 1e7)
+
+    local dlat = lat2 - lat1
+    local dlon = lon2 - lon1
+
+    local a = math.sin(dlat / 2)^2 +
+              math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)^2
+    local c = 2 * math.asin(math.min(1, math.sqrt(a)))   -- evita asin(>1) por erro de ponto-flutuante
+    return 6371000 * c
+end
+
+
+local function reached_wp()
+    local radius_m = param:get("WP_LOITER_RAD")   -- WP_RADIUS (m))
+    local d = geo_dist_m(ahrs:get_location(), waypoints[currentWP])
+    gcs:send_text(0,string.format("WP %d: %.1f m, %.1f", currentWP, d, radius_m))
+    return d <= radius_m
+end
+
 ------------------------------------------------------------------
 -- MAIN UPDATE
 ------------------------------------------------------------------
@@ -207,7 +230,7 @@ function update()
     elseif state==STATE_CRUISE then
         totalEnergy = totalEnergy + batt:voltage(0)*batt:current_amps(0)*(LOOP_FAST/1000)
         accumEnergy = accumEnergy + batt:voltage(0)*batt:current_amps(0)*(LOOP_FAST/1000)
-        if wait_s(20) then
+        if reached_wp() then
             state = STATE_LEARN
         end
 

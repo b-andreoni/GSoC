@@ -49,7 +49,7 @@ param:set("GPS_AUTO_SWITCH",  0)
 param:set("AHRS_EKF_TYPE",   10)
 
 -- SIM SPEEDUP
-param:set("SIM_SPEEDUP",   1000)
+param:set("SIM_SPEEDUP",   10)
 
 ------------------------------------------------------------------
 -- SCRIPT CONSTANTS
