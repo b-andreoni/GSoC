@@ -5,7 +5,7 @@ local PX            = "SIM_ERES_"   -- parameter table prefix
 local DEFAULT_PKEY  = 17            -- preferred table slot (may be taken)
 local TABLE_LEN     = 16            -- number of params we actually create
 local PKEY = DEFAULT_PKEY           -- may be overwritten below
-gcs:send_text(6, string.format("Começando script"))
+gcs:send_text(6, string.format("Starting script"))
 local function ensure_param_table()
     if param:add_table(PKEY, PX, TABLE_LEN) then return end
     for id = 0, 63 do
@@ -23,8 +23,8 @@ ensure_param_table()
 -- CONSTANTS
 ------------------------------------------------------------------
 local TAKEOFF_ALT_M   = 10    -- take-off altitude (m AGL)
-local GOTO_FWD_N_M    = 15    -- north offset for waypoint (m)
-local GOTO_FWD_E_M    = 15    -- east  offset for waypoint (m)
+local GOTO_FWD_N_M    = 88    -- north offset for waypoint (m)
+local GOTO_FWD_E_M    = -9   -- east  offset for waypoint (m)
 local CLOSE_THRESH_M  = 1     -- arrival tolerance (m)
 local LOOP_FAST       = 50    -- loop when ENABLE=1 (ms)
 local LOOP_IDLE       = 500   -- loop when ENABLE=0 (ms)
@@ -69,6 +69,7 @@ param:set("ARMING_CHECK", 0)
 param:set("GPS_TYPE", 0)
 param:set("GPS_AUTO_CONFIG", 0)
 param:set("GPS_AUTO_SWITCH", 0)
+param:set("AHRS_EKF_TYPE",   10)
 
 ------------------------------------------------------------------
 -- STATE VARIABLES
@@ -150,7 +151,7 @@ local function update()
     -- -1 ▸ wait EKF origin
     if phase == -1 then
         if not ekf_ready() then
-            if wait_s(2, "ekf_msg") then gcs:send_text(6, "Waiting for EKF origin…") end
+            if wait_s(2, "ekf_msg") then gcs:send_text(6, "Waiting for EKF origin...") end
             return
         end
         -- Initial pose & home
@@ -204,7 +205,7 @@ end
         local dist = ahrs:get_location():get_distance(target_loc)
         if wait_s(1, "msg_nav") then gcs:send_text(6, string.format("Dist %.2f m", dist)) end
         if dist <= CLOSE_THRESH_M then
-            gcs:send_text(6, "Reached -> resetting EKF & pose…")
+            gcs:send_text(6, "Reached -> resetting EKF & pose...")
             reset_pose()
             reset_timers()
             home_reasserted, takeoff_cmd_sent = false, false
@@ -212,10 +213,10 @@ end
         end; return
     end
 
-    -- 3 ▸ cooldown then restart (EKF will re-initialise during esta fase)
+    -- 3 ▸ cooldown then restart (EKF will re-initialise during this phase)
     if phase == 3 then
         if not wait_s(10, "ep_wait") then
-            if wait_s(2, "msg_ep") then gcs:send_text(6, "Restarting…") end
+            if wait_s(2, "msg_ep") then gcs:send_text(6, "Restarting...") end
             return
         end
         phase = -1; reset_timers(); return
@@ -230,5 +231,5 @@ local function loop()
     update(); return loop, LOOP_FAST
 end
 
-gcs:send_text(0, "episodic-reset v12 loaded - set SIM_ERES_ENABLE=1 to run")
+gcs:send_text(0, "episodic-reset loaded - set SIM_ERES_ENABLE=1 to run")
 return loop, 1000

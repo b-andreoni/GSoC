@@ -49,7 +49,7 @@ param:set("GPS_AUTO_SWITCH",  0)
 param:set("AHRS_EKF_TYPE",   10)
 
 -- SIM SPEEDUP
-param:set("SIM_SPEEDUP",   10)
+param:set("SIM_SPEEDUP",   1000)
 
 ------------------------------------------------------------------
 -- SCRIPT CONSTANTS
@@ -87,7 +87,7 @@ local MIN_EPSILON     = 0.01
 local epsilon         = INITIAL_EPSILON
 local stableCount = 0
 
-local STABLE_THRESHOLD = 50    -- number of episodes without best path to stop
+local STABLE_THRESHOLD = 600    -- number of episodes without best path to stop
 local stableCount      = 0     -- counts episodes without improvement
 local stopScript       = false -- flag to stop the script
 
@@ -286,8 +286,8 @@ function update()
             stopScript = true
             gcs:send_text(0, string.format("Best path stabilized after %d episodes. Stopping script.", epCount))
             
-        epCount = epCount + 1
         end
+        epCount = epCount + 1
         -- Teleport reset
         sim:set_pose(0,
             home_loc,
