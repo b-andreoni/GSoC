@@ -37,9 +37,8 @@ Each script:
 ## 3. Quick start
 
 ```bash
-cd GSoC/scripts/reinforcement_learning/tecs
-sim_vehicle.py -v ArduPlane --console --map --speedup 10000 \
-               --script spdweight.lua   # pick the script
+cp GSoC/scripts/reinforcement_learning/tecs ~/scripts
+sim_vehicle.py -v ArduPlane --map
 ```
 
 - *Stop / resume*: set SIM_ERES_ENABLE param (1 = run, 0 = idle).
