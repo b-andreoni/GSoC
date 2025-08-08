@@ -1,6 +1,7 @@
 ====================================================================
 Reinforcement Learning Episodic-Reset Lua Script for SITL
 ====================================================================
+https://github.com/b-andreoni/GSoC/blob/main/scripts/reinforcement_learning/path_optimization/energy_copter.lua
 
 This page describes the *energy-optimised path* example used in the
 **SITL AI Reinforcement Learning Concept Script** (GSoC 2025).  It shows

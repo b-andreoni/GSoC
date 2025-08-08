@@ -1,5 +1,8 @@
 
 # Reinforcement Learning Episodic‑Reset Lua Script for SITL
+![RL Illustrated](images/rl.gif)
+
+[path_optimization/energy_copter.lua](https://github.com/b-andreoni/GSoC/blob/main/scripts/reinforcement_learning/path_optimization/energy_copter.lua)
 
 This document describes the *energy‑optimised path* example used in the **SITL AI Reinforcement Learning Concept Script** (GSoC 2025). It explains how to patch **ArduPilot SITL** for deterministic resets, install the Lua script, and reproduce the results discussed in the Mid‑Term update.
 
