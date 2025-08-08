@@ -1,12 +1,13 @@
 ====================================================================
 Reinforcement Learning Episodic-Reset Lua Script for SITL
 ====================================================================
-https://github.com/b-andreoni/GSoC/blob/main/scripts/reinforcement_learning/path_optimization/energy_copter.lua
-
 This page describes the *energy-optimised path* example used in the
 **SITL AI Reinforcement Learning Concept Script** (GSoC 2025).  It shows
 how to patch **ArduPilot SITL** for deterministic resets, install the Lua
 script, and reproduce the results discussed in the Mid-Term update.
+
+`energy_copter.lua <https://github.com/b-andreoni/GSoC/blob/main/scripts/reinforcement_learning/path_optimization/energy_copter.lua>`_
+
 
 Overview
 ========
@@ -40,15 +41,16 @@ Patching *SIM_Aircraft.cpp*
 
 The stock `sim:set_pose()` only updates the NED offset, preventing
 multiple global relocations in the same run.  Apply the following patch
-(to *libraries/SITL/SIM_Aircraft.cpp*) and rebuild SITL::
+(to *libraries/SITL/SIM_Aircraft.cpp*) and rebuild SITL:
 
+.. code-block:: diff
 
-  - aircraft.position = aircraft.home.get_distance_NED_double(loc)
+    -aircraft.position = aircraft.home.get_distance_NED_double(loc)
 
-
-  + aircraft.home     = loc           // new reference
-  + aircraft.origin   = loc           // align EKF origin
-  + aircraft.position = Vector3d(0,0,0) // zero NED offset
+    +aircraft.home     = loc           // new reference
+    +aircraft.origin   = loc           // align EKF origin
+    +aircraft.position = Vector3d(0,0,0) // zero NED offset
+     
 
 Re-compile::
 
