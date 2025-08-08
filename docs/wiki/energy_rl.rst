@@ -174,5 +174,6 @@ References
 - Mid-Term update blog post: https://discuss.ardupilot.org/t/gsoc-2025-sitl-ai-reinforcement-learning-concept-script/135423/4
 - Source code: https://github.com/b-andreoni/GSoC
 - Fork with patch: https://github.com/b-andreoni/ardupilot
+
 - Sutton, R. & Barto, A. **Reinforcement Learning: An Introduction** (2nd ed.). MIT Press, 2018. 
-- Reinforcement Learning By the Book* - video series: https://www.youtube.com/playlist?list=PLzvYlJMoZ02Dxtwe-MmH4nOB5jYlMGBjr
+- *Reinforcement Learning By the Book* - video series: https://www.youtube.com/playlist?list=PLzvYlJMoZ02Dxtwe-MmH4nOB5jYlMGBjr
