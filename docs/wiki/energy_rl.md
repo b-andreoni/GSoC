@@ -1,6 +1,6 @@
 
 # Reinforcement Learning Episodic‑Reset Lua Script for SITL
-![RL Illustrated](images/rl.gif)
+![RL Illustrated](../images/rl.gif)
 
 [path_optimization/energy_copter.lua](https://github.com/b-andreoni/GSoC/blob/main/scripts/reinforcement_learning/path_optimization/energy_copter.lua)
 
