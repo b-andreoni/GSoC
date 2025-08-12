@@ -24,8 +24,8 @@ param:set("COMPASS_USE",0)
 ------------------------------------------------------------------ GRIDS
 local SPDW = {0.0, 1.0, 2.0}
 local TCON = {6, 8, 10}
-local PDMP = {0.0, 0.2, 0.4}
-
+local PDMP = {0.0, 0.2, 0.4}                                        -- +/- 0.5 instead of discrete values
+                                                                    -- use soft actor-critic (continuous)
 ------------------------------------------------------------------ HELPERS
 local function key(i,j,k) return i*100 + j*10 + k end
 local function vec3(x,y,z) local v=Vector3f(); v:x(x); v:y(y); v:z(z); return v end
@@ -90,7 +90,7 @@ function update()
         local altErr = math.abs((ahrs:get_location():alt() -
                                  (home:alt()+TARGET_HGT_M*100))/100)
         local power  = batt:voltage(0) * batt:current_amps(0)
-        totalCost = totalCost + (altErr + 0.1*power)*0.05
+        totalCost = totalCost + (altErr + 0.1*power)*0.05           -- add climb-rate and main tecs parameters
         if epi_time >= EP_SECONDS then state = S_EVAL end
 
     ---------------------------------------------------------------- EVAL
