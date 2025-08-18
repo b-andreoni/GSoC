@@ -101,7 +101,7 @@ This GSoC project is structured into five main phases:
 | Phase                              | Timeframe                   | Key Deliverables                                                                                                          |
 | ---------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | **1. Reset Mechanism**             | June 2025                   | • Integrate `sim:set_pose()` into SITL Lua API<br>• Enable repeatable episode resets                                      |
-| **2. Offline RL Phase (baseline)** | late June – early July 2025 | • Collect episodic logs with a fixed policy<br>• Train baseline value/Q‑function offline<br>• Report baseline performance |
+| **2. Offline RL Phase (baseline)** | late June – July 2025       | • Collect episodic logs with a fixed policy<br>• Train baseline value/Q‑function offline<br>• Report baseline performance |
 | **3. Online RL Loop**              | July 2025                   | • Implement reward & metrics collection<br>• Activate in‑place learning (SARSA/Q‑learning)                                |
 | **4. Policy Refinement**           | August 2025                 | • Add exploration strategies (e.g., ε‑decay)<br>• Validate on varied flight scenarios                                     |
 | **5. Docs & Releases**             | Early Sep 2025              | • Publish user guide and examples<br>• Open PRs/issues for community review                                               |
