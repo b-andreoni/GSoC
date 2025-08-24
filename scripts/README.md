@@ -1,92 +1,94 @@
-# /mission
-## \:computer: sim\:set\_pose & sim\_set\_pose\_mission.lua
+# GSoC Scripts
 
-This short guide shows how to use `sim:set_pose` inside ArduPilot SITL and explains the companion script **`sim_set_pose_mission.lua`** that teleports the vehicle when it arms, performs an automated take‑off, then kicks off the loaded mission in **AUTO** mode — perfect for batch‑testing or reinforcement‑learning loops where you need fully repeatable starts.
+## 1. Overview
 
----
+This directory contains all the Lua scripts developed for the GSoC 2025 project: "SITL AI Reinforcement Learning Concept Script." The scripts here build the necessary infrastructure to enable ArduPilot to learn and auto-tune its parameters in real-time within the SITL environment.
 
-### 1. `sim:set_pose`
+## 2. Directory Structure
 
-```lua
-sim:set_pose(instance, loc, orient, vel_bf, gyro_rads)
+The repository is organized as follows to separate concerns and maintain a clean workflow.
+
+```
+/GSoC/scripts/
+│
+├── log/
+│   └── log.lua
+│
+├── mission/
+│   ├── set_pose+mission.lua
+│   └── set_pose+target.lua
+│
+├── reinforcement_learning/
+│   ├── path_optimization/
+│   │   └── energy_copter_50wp.lua
+│   ├── pid/
+│   └── tecs/
+│
+├── reset/
+│   ├── episodic_reset.lua
+│   ├── sim_arming_pos_global.lua
+│   └── sim_arming_pos_offset.lua
+│
+└── README.md
 ```
 
-| Argument    | Meaning                               | Typical value                 |
-| ----------- | ------------------------------------- | ----------------------------- |
-| `instance`  | SITL instance index                   | `0`                           |
-| `loc`       | Absolute location (`Location` object) | `ahrs:get_origin()` + offsets |
-| `orient`    | Attitude quaternion                   | `quat:from_euler(r,p,y)`      |
-| `vel_bf`    | Velocity vector in **body** frame     | `Vector3f(0,0,0)`             |
-| `gyro_rads` | Gyro rates (rad/s)                    | `Vector3f(0,0,0)`             |
+### 2.1 Component Breakdown
 
-Calling this function **instantly teleports** your simulated drone and overrides its velocity and gyro readings, letting you start every episode from an identical state.
+* **`log/`**: Contains the `log.lua` utility, a helper script for creating and managing structured log files during simulation runs.
+* **`mission/`**: Holds high-level scripts that combine the reset mechanism with a simple flight mission. These are often the main entry points for running an experiment.
+* **`reinforcement_learning/`**: The core of the project, containing the RL agent implementations. It is subdivided by application:
+    * `path_optimization/`: Scripts related to trajectory and path planning agents.
+    * `pid/`: Agents designed specifically for tuning PID controllers.
+    * `tecs/`: Agents focused on tuning the Total Energy Control System (TECS).
+* **`reset/`**: Contains low-level scripts focused on the "teleport" or reset mechanism, which leverages the `sim:set_pose()` function to reset the vehicle's state between training episodes.
 
----
+## 3. How to Use
 
-### 2. `set_pose+mission.lua`
+To run these scripts, you must load them into a running SITL instance. The typical workflow is as follows:
 
-The script waits for an arm event, forces a configurable pose with `sim:set_pose`, switches to **GUIDED** for take‑off, then slides into **AUTO** and begins the first mission command. Everything is driven by a handful of parameters, so you can trigger it from a GCS or via a parameter file.
+1.  **Start SITL:** Launch your desired vehicle, for instance:
+    ```bash
+    sim_vehicle.py -v ArduCopter --console --map
+    ```
 
-#### 2.1 Configurable parameters
+2.  **Load a Script:** From the SITL console, load a high-level mission script. For example:
+    ```bash
+    script GSoC/scripts/reinforcement_learning/path_optimization/energy_copter_50wp.lua
+    ```
 
-| Parameter              | Purpose                                              | Default |
-| ---------------------- | ---------------------------------------------------- | ------- |
-| `SIM_APOS_ENABLE`      | Master switch (0 = idle, 1 = active)                 | 0       |
-| `SIM_APOS_POS_N/E/D`   | Position offsets (m) relative to origin              | 0       |
-| `SIM_APOS_VEL_X/Y/Z`   | Body‑frame velocity (m/s)                            | 0       |
-| `SIM_APOS_RLL/PIT/YAW` | Initial attitude (deg)                               | 0       |
-| `SIM_APOS_GX/GY/GZ`    | Initial gyro (deg/s)                                 | 0       |
-| `SIM_APOS_MODE`        | Flight‑mode to switch to after pose (‑1 = no change) | ‑1      |
-| `WAIT_BEFORE_ARM`      | Loops (\~50 ms each) before auto‑arming              | 250     |
-| `WAIT_AFTER_AUTO`      | Loops to wait once AUTO confirmed                    | 60      |
+3.  **Monitor:** Watch the console output to track the learning progress and the results of each episode.
 
-*(All parameters live in the **********`SIM_APOS_`********** table; see the script for exact names.)*
+4.  **Analyze:** After the simulation completes, check the `logs/` directory to analyze the collected data.
 
-#### 2.2 How it works
+## 4. Core Scripts
 
-1. **Enable** — set `SIM_APOS_ENABLE = 1` and load a mission.
-2. **Pose fix** — on the very first execution the script calls `sim:set_pose` with your offsets & attitude.
-3. **Countdown** — waits `WAIT_BEFORE_ARM` ticks (\~10 s) before sending an **ARM** command.
-4. **Take‑off** — switches to **GUIDED**, issues `vehicle:start_takeoff(alt)`, then requests **AUTO**.
-5. **Mission start** — after `WAIT_AFTER_AUTO` ticks (\~3 s), `mission:set_current_cmd(0)` pushes the autopilot into the first waypoint.
+This section highlights the key scripts that demonstrate the project's capabilities.
 
-The loop runs every 50 ms while enabled, falling back to 500 ms when idle to minimise CPU load.
+### 4.1 `reinforcement_learning/path_optimization/energy_copter_50wp.lua`
 
----
+This is the flagship script for path optimization. It uses Q-learning to find the most energy-efficient route to visit 50 waypoints.
 
-### 3. Tips
+* **Purpose:** To train an agent that minimizes total battery consumption by learning the optimal flight path.
+* **Logic:**
+    1.  **Episodic Training:** The script runs hundreds of episodes. In each episode, the copter attempts to visit all 50 waypoints.
+    2.  **State & Action:** The "state" is the set of waypoints already visited. The "action" is choosing the next waypoint.
+    3.  **Reward:** The reward is the *negative* energy consumed during a flight segment. Maximizing this reward is equivalent to minimizing energy use.
+    4.  **Learning:** After each segment, a Q-table is updated to store the long-term value of choosing a specific waypoint from a given state.
+    5.  **Reset:** At the end of an episode, the script logs the results, teleports the vehicle back to the start using `sim:set_pose()`, and begins a new learning cycle.
 
-* Keep `EK3_OPTN = 10` (Direct State Feed) to avoid long EKF convergence after teleporting.
-* If you see `SCRIPTING: mem alloc failed`, raise `SCR_HEAP_SIZE` or trim print statements.
-* Want a different launch profile? Tweak `WAIT_BEFORE_ARM`, `WAIT_AFTER_AUTO`, or bypass **GUIDED** entirely by setting `SIM_APOS_MODE` straight to `AUTO`.
+### 4.2 `mission/set_pose+mission.lua`
 
-# /reset
-## :computer: sim:set_pose & sim_arming_pos.lua
+This script serves as a simpler example of a complete training loop, combining a reset with a standard mission file.
 
-This document describes a simple script (`sim_arming_pos.lua`) that forces the vehicle’s pose when it arms.
+* **Purpose:** To execute a full episodic session for testing or data collection.
+* **Logic:**
+    1.  **Reset:** Initializes the vehicle's position using a script from the `/reset/` directory.
+    2.  **Execute:** Runs a predefined mission file (e.g., from `mission/`).
+    3.  **Repeat:** At the end of the mission, the cycle repeats, allowing for consistent, repeatable tests.
 
----
+### 4.3 `reset/episodic_reset.lua`
 
-## sim_arming_pos.lua
+This script provides the foundational reset functionality used by all other learning scripts.
 
-This script forces a predefined pose at the moment the vehicle arms.
-
-### How It Works
-
-1. Wait for `ENABLE = 1`
-2. Detect arm event (transition from disarmed → armed)
-3. On arming:
-   - Build quaternion from `RLL`, `PIT`, `YAW`
-   - Create `Vector3f` for velocity and gyro
-   - Build location with offsets `POS_N`, `POS_E`, `POS_D`
-   - Call `sim:set_pose(0, loc, quat, vel, gyro)`
-   - If `MODE >= 0`, call `vehicle:set_mode(MODE)`
-4. The script runs in a 50 ms loop and only triggers on the arm transition.
-
-## Example:
-```bash
-param set SIM_APOS_ENABLE 1
-param set SIM_APOS_POS_N 100
-param set SIM_APOS_POS_N -50
-arm throttle
-```
+* **Purpose:** To reliably and repeatedly reset the vehicle's state (position, attitude, velocity) to a consistent starting point for each training episode.
+* **Function:** Wraps the `sim:set_pose()` binding in a reusable function that can be called at the start or end of an episode.
