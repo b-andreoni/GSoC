@@ -1,5 +1,30 @@
 # GSoC Scripts
 
+## 0. Patching `SIM_Aircraft.cpp`
+
+The stock `sim:set_pose()` only updates the NED offset, preventing multiple global relocations in the same run. Apply the following patch to `libraries/SITL/SIM_Aircraft.cpp` and rebuild SITL:
+
+```diff
+- aircraft.position = aircraft.home.get_distance_NED_double(loc)
+
++ aircraft.home     = loc            // new reference
++ aircraft.origin   = loc            // align EKF origin
++ aircraft.position = Vector3d(0,0,0) // zero NED offset
+```
+
+Re‑compile:
+
+```bash
+./waf configure --board sitl
+./waf copter        # or plane
+```
+
+Alternatively, clone the pre‑patched fork:
+
+```bash
+git clone git@github.com:b-andreoni/ardupilot.git
+```
+
 ## 1. Overview
 
 This directory contains all the Lua scripts developed for the GSoC 2025 project: "SITL AI Reinforcement Learning Concept Script." The scripts here build the necessary infrastructure to enable ArduPilot to learn and auto-tune its parameters in real-time within the SITL environment.
