@@ -16,17 +16,20 @@ Foundation: These simple examples serve as foundational building blocks and proo
 ## 3. Agent Categories
 The RL agents are organized into the following categories. Please refer to the README.md within each folder for a detailed breakdown of the problem, the solution, and the specific RL implementation.
 
-📁 ./path_optimization/
+- 📁 ./path_optimization/
+
 Problem: Finding the most efficient route (in terms of energy or time) to visit a series of waypoints.
 
 Use Case: Ideal for mission planning, logistics, and maximizing flight endurance.
 
-📁 ./pid/
+- 📁 ./pid/
+
 Problem: Automating the tedious and complex process of tuning PID controller gains for stable and responsive flight.
 
 Use Case: Foundational for vehicle setup, ensuring crisp attitude control and stability.
 
-📁 ./tecs/
+- 📁 ./tecs/
+
 Problem: Tuning the interdependent parameters of the Total Energy Control System (TECS) for fixed-wing aircraft.
 
 Use Case: Critical for efficient and smooth management of airspeed and altitude in fixed-wing missions.
